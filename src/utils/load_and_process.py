@@ -1,8 +1,11 @@
 import pandas as pd
 from logger.logger import get_logger
 import numpy as np
-from src.utils.path_utils import get_app_root_path
+from src.utils.path_utils import get_app_data_path
 import os
+from sklearn.pipeline import Pipeline
+import sklearn.model_selection as ms
+from sklearn.preprocessing import StandardScaler
 
 logger = get_logger()
 
@@ -67,11 +70,32 @@ class DataLoader:
 
         self._data = applicant_df.join(loan_df)
 
+    def dump_test_train_val(self, test_size=0.2, random_state=123):
+        """
+        :param test_size:
+        :param random_state:
+        :return: None
+        """
+        train_df, test_df = ms.train_test_split(self._data,
+                                                test_size=test_size,
+                                                random_state=random_state,
+                                                stratify=self._data[self.output_column_name()])
+
+        train_df, val_df = ms.train_test_split(train_df,
+                                               test_size=test_size,
+                                               random_state=random_state,
+                                               stratify=train_df[self.output_column_name()])
+
+        test_df.to_csv('{}/{}_test.csv'.format(get_app_data_path(), self.data_name()), index=False, header=False)
+        train_df.to_csv('{}/{}_train.csv'.format(get_app_data_path(), self.data_name()), index=False, header=False)
+        val_df.to_csv('{}/{}_validate.csv'.format(get_app_data_path(), self.data_name()), index=False, header=False)
+
+
 if __name__ == '__main__':
-    data_path = os.path.join(get_app_root_path(), 'data')
-    cd_data = DataLoader(path=data_path, verbose=True)
+    cd_data = DataLoader(path=get_app_data_path(), verbose=True)
     cd_data.load_and_process()
     feature_list = []
     for feature in cd_data.features:
         feature_list.append(feature)
+    cd_data.dump_test_train_val()
     # logger.info(feature_list)

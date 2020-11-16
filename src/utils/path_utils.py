@@ -1,11 +1,11 @@
 from pathlib import Path
 
-def get_app_root_path() -> Path:
+def get_app_data_path() -> Path:
     '''
     method to provide app root directory directory path i.e */credit-worthiness/
     :return: app root directory directory path
     '''
-    root_path = get_app_src_path().parent
+    root_path = get_app_src_path().parent.joinpath('data')
     return root_path
 
 
