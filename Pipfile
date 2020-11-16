@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+jupyterlab = "==1.2.6"
+
+[packages]
+tensorflow = "*"
+sklearn = "*"
+pandas = "*"
+seaborn = "*"
+matplotlib = "*"
+numpy = "*"
+
+[requires]
+python_version = "3.7"
