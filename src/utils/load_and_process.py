@@ -12,7 +12,7 @@ logger = get_logger()
 
 class DataLoader:
 
-    def __init__(self, path, verbose=False, seed=1):
+    def __init__(self, path=get_app_data_path(), verbose=False, seed=1):
         self._path = path
         self._verbose = verbose
         self.features = None
@@ -21,7 +21,14 @@ class DataLoader:
         self.testing_y = None
         self.training_x = None
         self.training_y = None
+        self._seed = seed
         self._data = pd.DataFrame()
+
+    def build_train_test_split(self, test_size=0.3):
+        if not self.training_x and not self.training_y and not self.testing_x and not self.testing_y:
+            self.training_x, self.testing_x, self.training_y, self.testing_y = ms.train_test_split(
+                self.features, self.output, test_size=test_size, random_state=self._seed
+            )
 
     def load_and_process(self):
         """
@@ -34,7 +41,7 @@ class DataLoader:
         if self._verbose:
             logger.info("Processing {} Path: {}, Dimensions: {}".format(self.data_name(), self._path, self._data.shape))
 
-        # self._preprocess_data()
+        self._preprocess_data()
 
         self.get_features()
         self.get_output()
@@ -43,13 +50,13 @@ class DataLoader:
 
     def get_features(self):
         logger.info("Pulling features")
-        self.features = self._data.iloc[:, 0:-1]
+        self.features = self._data.loc[:, self._data.columns != self.output_column_name()]
 
         return self.features
 
     def get_output(self):
         logger.info("Pulling output")
-        self.output = np.array(self._data.iloc[:, -1])
+        self.output = np.array(self._data.loc[:, self._data.columns == self.output_column_name()])
 
         return self.output
 
@@ -69,6 +76,74 @@ class DataLoader:
         loan_df = pd.read_csv(loan_csv, index_col='applicant_id')
 
         self._data = applicant_df.join(loan_df)
+
+    def _preprocess_data(self):
+        full_df = self._data
+
+        interval = (18, 25, 35, 60, 120)
+
+        cats = ['Student', 'Young', 'Adult', 'Senior']
+        full_df["Age_cat"] = pd.cut(full_df['Primary_applicant_age_in_years'], interval, labels=cats)
+
+        full_df['Savings_account_balance'] = full_df['Savings_account_balance'].fillna('no_inf')
+        full_df['Other_EMI_plans'] = full_df['Other_EMI_plans'].fillna('NA')
+
+        full_df['Has_been_employed_for_at_least'] = full_df['Has_been_employed_for_at_least'].apply(
+            lambda x: int(str(x).split()[0]) if str(x) != 'nan' else 0)
+
+        full_df['Has_been_employed_for_at_most'] = full_df['Has_been_employed_for_at_most'].apply(
+            lambda x: int(str(x).split()[0]) if str(x) != 'nan' else 0)
+
+        full_df = full_df.merge(pd.get_dummies(full_df.Purpose, drop_first=True, prefix='Purpose'),
+                                left_index=True, right_index=True)
+
+        full_df = full_df.merge(pd.get_dummies(full_df.Gender, drop_first=True, prefix='Gender'), left_index=True,
+                                right_index=True)
+
+        full_df = full_df.merge(pd.get_dummies(full_df.Housing, drop_first=True, prefix='Housing'),
+                                left_index=True, right_index=True)
+
+        full_df = full_df.merge(
+            pd.get_dummies(full_df.Savings_account_balance, drop_first=True, prefix='Savings'), left_index=True,
+            right_index=True)
+
+        full_df = full_df.merge(pd.get_dummies(full_df.Age_cat, drop_first=True, prefix='Age_cat'),
+                                left_index=True, right_index=True)
+
+        full_df = full_df.merge(pd.get_dummies(full_df.Marital_status, drop_first=True, prefix='Marital_status'),
+                                left_index=True, right_index=True)
+
+        full_df = full_df.merge(
+            pd.get_dummies(full_df.Employment_status, drop_first=True, prefix='Employment_status'), left_index=True,
+            right_index=True)
+
+        full_df = full_df.merge(pd.get_dummies(full_df.Property, drop_first=True, prefix='Property'),
+                                left_index=True, right_index=True)
+
+        full_df = full_df.merge(pd.get_dummies(full_df.Loan_history, drop_first=True, prefix='Loan_history'),
+                                left_index=True, right_index=True)
+
+        full_df = full_df.merge(pd.get_dummies(full_df.Other_EMI_plans, drop_first=True, prefix='Other_EMI'),
+                                left_index=True, right_index=True)
+
+        del full_df["Purpose"]
+        del full_df["Gender"]
+        del full_df["Housing"]
+        del full_df["Primary_applicant_age_in_years"]
+        del full_df["Savings_account_balance"]
+        del full_df["Age_cat"]
+        del full_df["Marital_status"]
+        del full_df["Employment_status"]
+        del full_df["Telephone"]
+        del full_df["loan_application_id"]
+        del full_df["Property"]
+        del full_df["Balance_in_existing_bank_account_(lower_limit_of_bucket)"]
+        del full_df["Balance_in_existing_bank_account_(upper_limit_of_bucket)"]
+        del full_df["Loan_history"]
+        del full_df["Other_EMI_plans"]
+
+        self._data = full_df
+        print(self._data.columns)
 
     def dump_test_train_val(self, test_size=0.2, random_state=123):
         """
