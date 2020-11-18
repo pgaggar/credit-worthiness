@@ -16,6 +16,7 @@ numpy = "*"
 lightgbm = "*"
 psutil = "*"
 xgboost = "*"
+jupyter = "*"
 
 [requires]
 python_version = "3.7"

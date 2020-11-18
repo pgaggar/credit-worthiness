@@ -1,0 +1,2 @@
+memory,steps,verbose,LRClassifier,LRClassifier__C,LRClassifier__class_weight,LRClassifier__dual,LRClassifier__fit_intercept,LRClassifier__intercept_scaling,LRClassifier__l1_ratio,LRClassifier__max_iter,LRClassifier__multi_class,LRClassifier__n_jobs,LRClassifier__penalty,LRClassifier__random_state,LRClassifier__solver,LRClassifier__tol,LRClassifier__verbose,LRClassifier__warm_start
+,"[('LRClassifier', LogisticRegression(random_state=794957692))]",False,LogisticRegression(random_state=794957692),1.0,,False,True,1,,100,auto,,l2,794957692,lbfgs,0.0001,0,False

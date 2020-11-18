@@ -1,0 +1,2 @@
+mean_fit_time,std_fit_time,mean_score_time,std_score_time,param_LRClassifier__penalty,params,split0_test_score,split1_test_score,split2_test_score,split3_test_score,split4_test_score,mean_test_score,std_test_score,rank_test_score
+0.005673980712890625,0.0014047343033767137,0.00121917724609375,0.0002469340990557911,l2,{'LRClassifier__penalty': 'l2'},0.0,0.0,0.0,0.0,0.0,0.0,0.0,1

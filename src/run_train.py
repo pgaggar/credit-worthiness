@@ -10,7 +10,10 @@ from logger.logger import get_logger
 from trainer import custom_accuracy
 from trainer.decision_tree_classifier import DTClassifier
 from trainer.random_forest_classifier import RFClassifier
-from trainer.gradient_boosted_classifier import GBClassifier
+from trainer.adaboost_classifier import AdaboostClassifier
+from trainer.lightgbm_classifier import LightGBMClassifier
+from trainer.xgboost_classifier import XGBClassifier
+from trainer.logistic_regression_classifier import LRClassifier
 from utils.load_and_process import DataLoader
 
 logger = get_logger()
@@ -83,11 +86,11 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, help='A random seed to set, if desired')
     parser.add_argument('--boosting', action='store_true', help='Run the Boosting experiment')
     parser.add_argument('--rf', action='store_true', help='Run the Bagging experiment')
-    parser.add_argument('--lgbm', action='store_true', help='Run the Gradient Boosting experiment')
-    parser.add_argument('--knn', action='store_true', help='Run the KNN experiment')
+    parser.add_argument('--lgbm', action='store_true', help='Run the LightGBM experiment')
+    parser.add_argument('--xgb', action='store_true', help='Run the XGBoost experiment')
+    parser.add_argument('--boost', action='store_true', help='Run the Adaboost experiment')
     parser.add_argument('--dtclf', action='store_true', help='Run the Decision Tree experiment')
-    parser.add_argument('--ann', action='store_true', help='Run the ANN experiment')
-    parser.add_argument('--averaged', action='store_true', help='Run the Averaged experiment')
+    parser.add_argument('--lr', action='store_true', help='Run the Logistic Regression experiment')
     parser.add_argument('--test', action='store_true', help='Test the trained model')
     parser.add_argument('--verbose', action='store_true', help='If true, provide verbose output')
     args = parser.parse_args()
@@ -109,23 +112,20 @@ if __name__ == '__main__':
 
     timings = {}
 
-    # if args.boosting:
-    #     run_experiment(ds, experiments.BoostingExperiment, 'Boosting', verbose, timings)
-    #
     if args.lgbm:
-        run_experiment(ds, GBClassifier, 'GBClassifier', verbose, timings)
+        run_experiment(ds, LightGBMClassifier, 'LGBClassifier', verbose, timings)
+
+    if args.xgb:
+        run_experiment(ds, XGBClassifier, 'XGBClassifier', verbose, timings)
+
+    if args.boost:
+        run_experiment(ds, AdaboostClassifier, 'AdaboostClassifier', verbose, timings)
 
     if args.rf:
         run_experiment(ds, RFClassifier, 'RFClassifier', verbose, timings)
-    #
-    # if args.ann:
-    #     run_experiment(ds, experiments.ANNExperiment, 'ANN', verbose, timings)
-    #
-    # if args.averaged:
-    #     run_experiment(ds, experiments.AveragedExperiment, 'Averaged', verbose, timings)
-    #
-    # if args.knn:
-    #     run_experiment(ds, experiments.KNNExperiment, 'KNN', verbose, timings)
+
+    if args.lr:
+        run_experiment(ds, LRClassifier, 'LRClassifier', verbose, timings)
 
     if args.dtclf:
         run_experiment(ds, DTClassifier, 'DTClassifier', verbose, timings)

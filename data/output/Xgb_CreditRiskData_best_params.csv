@@ -1,0 +1,18 @@
+memory,steps,verbose,Xgb,Xgb__objective,Xgb__base_score,Xgb__booster,Xgb__colsample_bylevel,Xgb__colsample_bynode,Xgb__colsample_bytree,Xgb__gamma,Xgb__gpu_id,Xgb__importance_type,Xgb__interaction_constraints,Xgb__learning_rate,Xgb__max_delta_step,Xgb__max_depth,Xgb__min_child_weight,Xgb__missing,Xgb__monotone_constraints,Xgb__n_estimators,Xgb__n_jobs,Xgb__num_parallel_tree,Xgb__random_state,Xgb__reg_alpha,Xgb__reg_lambda,Xgb__scale_pos_weight,Xgb__subsample,Xgb__tree_method,Xgb__validate_parameters,Xgb__verbosity,Xgb__num_leaves
+,"[('Xgb', XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
+              colsample_bynode=1, colsample_bytree=1, gamma=0, gpu_id=-1,
+              importance_type='gain', interaction_constraints='',
+              learning_rate=0.04, max_delta_step=0, max_depth=20,
+              min_child_weight=1, missing=nan, monotone_constraints='()',
+              n_estimators=20, n_jobs=0, num_leaves=30, num_parallel_tree=1,
+              random_state=0, reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
+              subsample=1, tree_method='exact', validate_parameters=1,
+              verbosity=None))]",False,"XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
+              colsample_bynode=1, colsample_bytree=1, gamma=0, gpu_id=-1,
+              importance_type='gain', interaction_constraints='',
+              learning_rate=0.04, max_delta_step=0, max_depth=20,
+              min_child_weight=1, missing=nan, monotone_constraints='()',
+              n_estimators=20, n_jobs=0, num_leaves=30, num_parallel_tree=1,
+              random_state=0, reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
+              subsample=1, tree_method='exact', validate_parameters=1,
+              verbosity=None)",binary:logistic,0.5,gbtree,1,1,1,0,-1,gain,,0.04,0,20,1,,(),20,0,1,0,0,1,1,1,exact,1,,30

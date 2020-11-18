@@ -11,7 +11,6 @@ from utils.path_utils import get_app_data_path
 from sklearn.model_selection import train_test_split, KFold, GridSearchCV
 
 import matplotlib
-
 matplotlib.use('Agg')
 
 logger = get_logger()
@@ -43,7 +42,6 @@ def basic_results(learner, training_x, training_y, params, clf_name=None, datase
     :param params:
     :param clf_name:
     :param dataset:
-    :param dataset_readable_name:
     :param seed:
     :param threads:
     :return:
@@ -55,9 +53,9 @@ def basic_results(learner, training_x, training_y, params, clf_name=None, datase
         raise Exception('clf_type and dataset are required')
     if seed is not None:
         np.random.seed(seed)
-    kfold = KFold(n_splits=5, random_state=seed)
+    kfold = KFold(n_splits=5, random_state=seed, shuffle=True)
     cv = GridSearchCV(learner, n_jobs=threads, param_grid=params, verbose=10, refit=True, cv=kfold,
-                      scoring=scorer_accuracy)
+                      scoring='recall')
     training_y = training_y.ravel()
 
     cv.fit(training_x, training_y)
@@ -82,7 +80,6 @@ def make_timing_curve(x, y, clf, clf_name, dataset, verbose=False, seed=42):
     :param clf:
     :param clf_name:
     :param dataset:
-    :param dataset_readable_name:
     :param verbose:
     :param seed:
     :return: None
@@ -124,7 +121,6 @@ def perform_experiment(ds, ds_name, clf_name, params, pipe, seed=0, threads=4):
     """
     :param ds:
     :param ds_name:
-    :param ds_readable_name:
     :param clf_name:
     :param params:
     :param pipe:

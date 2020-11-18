@@ -1,0 +1,8 @@
+memory,steps,verbose,lgbm,lgbm__boosting_type,lgbm__class_weight,lgbm__colsample_bytree,lgbm__importance_type,lgbm__learning_rate,lgbm__max_depth,lgbm__min_child_samples,lgbm__min_child_weight,lgbm__min_split_gain,lgbm__n_estimators,lgbm__n_jobs,lgbm__num_leaves,lgbm__objective,lgbm__random_state,lgbm__reg_alpha,lgbm__reg_lambda,lgbm__silent,lgbm__subsample,lgbm__subsample_for_bin,lgbm__subsample_freq,lgbm__metric
+,"[('lgbm', LGBMClassifier(colsample_bytree=0.9234, learning_rate=0.02, max_depth=20,
+               metric='None', min_child_samples=399, min_child_weight=0.1,
+               n_estimators=10, n_jobs=4, num_leaves=30, random_state=314,
+               reg_alpha=2, reg_lambda=5, subsample=0.855, subsample_freq=1))]",False,"LGBMClassifier(colsample_bytree=0.9234, learning_rate=0.02, max_depth=20,
+               metric='None', min_child_samples=399, min_child_weight=0.1,
+               n_estimators=10, n_jobs=4, num_leaves=30, random_state=314,
+               reg_alpha=2, reg_lambda=5, subsample=0.855, subsample_freq=1)",gbdt,,0.9234,split,0.02,20,399,0.1,0.0,10,4,30,,314,2,5,True,0.855,200000,1,None

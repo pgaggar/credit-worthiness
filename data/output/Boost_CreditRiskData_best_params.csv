@@ -1,8 +1,4 @@
-memory,steps,verbose,Boost,Boost__boosting_type,Boost__class_weight,Boost__colsample_bytree,Boost__importance_type,Boost__learning_rate,Boost__max_depth,Boost__min_child_samples,Boost__min_child_weight,Boost__min_split_gain,Boost__n_estimators,Boost__n_jobs,Boost__num_leaves,Boost__objective,Boost__random_state,Boost__reg_alpha,Boost__reg_lambda,Boost__silent,Boost__subsample,Boost__subsample_for_bin,Boost__subsample_freq,Boost__metric
-,"[('Boost', LGBMClassifier(colsample_bytree=0.9234, learning_rate=0.02, max_depth=20,
-               metric='None', min_child_samples=399, min_child_weight=0.1,
-               n_estimators=10, n_jobs=4, num_leaves=30, random_state=314,
-               reg_alpha=2, reg_lambda=5, subsample=0.855, subsample_freq=1))]",False,"LGBMClassifier(colsample_bytree=0.9234, learning_rate=0.02, max_depth=20,
-               metric='None', min_child_samples=399, min_child_weight=0.1,
-               n_estimators=10, n_jobs=4, num_leaves=30, random_state=314,
-               reg_alpha=2, reg_lambda=5, subsample=0.855, subsample_freq=1)",gbdt,,0.9234,split,0.02,20,399,0.1,0.0,10,4,30,,314,2,5,True,0.855,200000,1,None
+memory,steps,verbose,Boost,Boost__ccp_alpha,Boost__criterion,Boost__init,Boost__learning_rate,Boost__loss,Boost__max_depth,Boost__max_features,Boost__max_leaf_nodes,Boost__min_impurity_decrease,Boost__min_impurity_split,Boost__min_samples_leaf,Boost__min_samples_split,Boost__min_weight_fraction_leaf,Boost__n_estimators,Boost__n_iter_no_change,Boost__presort,Boost__random_state,Boost__subsample,Boost__tol,Boost__validation_fraction,Boost__verbose,Boost__warm_start
+,"[('Boost', GradientBoostingClassifier(learning_rate=0.04, max_depth=40, n_estimators=150,
+                           random_state=371033666))]",False,"GradientBoostingClassifier(learning_rate=0.04, max_depth=40, n_estimators=150,
+                           random_state=371033666)",0.0,friedman_mse,,0.04,deviance,40,,,0.0,,1,2,0.0,150,,deprecated,371033666,1.0,0.0001,0.1,0,False
