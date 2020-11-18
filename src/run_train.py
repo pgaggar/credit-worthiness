@@ -1,7 +1,7 @@
 import argparse
 import pickle
 from datetime import datetime
-from time import clock
+import time
 import psutil
 import numpy as np
 import os
@@ -54,7 +54,7 @@ def run_test_experiment(ds):
     :param ds:
     :return:
     """
-    start_time = clock()
+    start_time = time.process_time()
     data = ds['data']
 
     try:
@@ -68,15 +68,10 @@ def run_test_experiment(ds):
         y = test_y.ravel()
         acc = np.sqrt(custom_accuracy(output, y))
         logger.info("Accuracy on test: %s", acc)
-        output = output.astype(str)
-        output_str = "\n".join(output)
-        result_path = os.path.join(get_app_data_path(), 'output/model_output.txt')
-        with open(result_path, 'wb+') as fout:
-            fout.write(output_str.encode('utf8'))
 
     except IOError:
         logger.info("Can't find file")
-    end_time = clock()
+    end_time = time.process_time()
     logger.info("Total time for 100000 samples: %s seconds", end_time - start_time)
     process = psutil.Process(os.getpid())
     logger.info("Memory usage: %s MB", process.memory_info()[0] / (1024 * 1024))

@@ -1,6 +1,6 @@
 import os
 import pickle
-from time import clock
+import time
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -55,7 +55,7 @@ def basic_results(learner, training_x, training_y, params, clf_name=None, datase
         raise Exception('clf_type and dataset are required')
     if seed is not None:
         np.random.seed(seed)
-    kfold = KFold(n_splits=10, random_state=seed)
+    kfold = KFold(n_splits=5, random_state=seed)
     cv = GridSearchCV(learner, n_jobs=threads, param_grid=params, verbose=10, refit=True, cv=kfold,
                       scoring=scorer_accuracy)
     training_y = training_y.ravel()
@@ -75,7 +75,7 @@ def basic_results(learner, training_x, training_y, params, clf_name=None, datase
     return cv
 
 
-def make_timing_curve(x, y, clf, clf_name, dataset, dataset_readable_name, verbose=False, seed=42):
+def make_timing_curve(x, y, clf, clf_name, dataset, verbose=False, seed=42):
     """
     :param x:
     :param y:
@@ -89,7 +89,6 @@ def make_timing_curve(x, y, clf, clf_name, dataset, dataset_readable_name, verbo
     """
     logger.info("Building timing curve")
 
-    # np.linspace(0.1, 1, num=10)  #
     sizes = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     tests = 2
     out = dict()
@@ -99,17 +98,17 @@ def make_timing_curve(x, y, clf, clf_name, dataset, dataset_readable_name, verbo
         for j in range(tests):
             np.random.seed(seed)
             x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=1 - frac, random_state=seed)
-            st = clock()
-            clf.fit(x_train, y_train)
-            out['train'][i, j] = (clock() - st)
-            st = clock()
+            st = time.process_time()
+            clf.fit(x_train, y_train.ravel())
+            out['train'][i, j] = (time.process_time() - st)
+            st = time.process_time()
             clf.predict(x_test)
-            out['test'][i, j] = (clock() - st)
+            out['test'][i, j] = (time.process_time() - st)
             logger.info(" - {} {} {}".format(clf_name, dataset, frac))
 
     train_df = pd.DataFrame(out['train'], index=sizes)
     test_df = pd.DataFrame(out['test'], index=sizes)
-    plt = plot_model_timing('{} - {}'.format(clf_name, dataset_readable_name),
+    plt = plot_model_timing('{}'.format(clf_name),
                             np.array(sizes) * 100, train_df, test_df)
     plt.savefig('{}/images/{}_{}_TC.png'.format(OUTPUT_DIRECTORY, clf_name, dataset), format='png', dpi=150)
 
@@ -118,10 +117,10 @@ def make_timing_curve(x, y, clf, clf_name, dataset, dataset_readable_name, verbo
     out['test'] = np.mean(test_df, axis=1)
     out.to_csv('{}/{}_{}_timing.csv'.format(OUTPUT_DIRECTORY, clf_name, dataset))
 
-    logger.info(" - Timing curve complete")
+    logger.info("Timing curve complete")
 
 
-def perform_experiment(ds, ds_name, clf_name, params, pipe, seed=0, threads=1):
+def perform_experiment(ds, ds_name, clf_name, params, pipe, seed=0, threads=4):
     """
     :param ds:
     :param ds_name:
@@ -143,8 +142,7 @@ def perform_experiment(ds, ds_name, clf_name, params, pipe, seed=0, threads=1):
     ds_final_params = ds_clf.best_params_
     pipe.set_params(**ds_final_params)
 
-    # make_timing_curve(ds.features, ds.output, pipe, clf_name, ds_name, ds_readable_name,
-    #                   seed=seed)
+    make_timing_curve(ds_training_x, ds_training_y, pipe, clf_name, ds_name, seed=seed)
 
     return ds_final_params
 

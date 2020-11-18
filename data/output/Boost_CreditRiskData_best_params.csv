@@ -1,20 +1,8 @@
-memory,steps,verbose,Boost,Boost__objective,Boost__base_score,Boost__booster,Boost__colsample_bylevel,Boost__colsample_bynode,Boost__colsample_bytree,Boost__gamma,Boost__gpu_id,Boost__importance_type,Boost__interaction_constraints,Boost__learning_rate,Boost__max_delta_step,Boost__max_depth,Boost__min_child_weight,Boost__missing,Boost__monotone_constraints,Boost__n_estimators,Boost__n_jobs,Boost__num_parallel_tree,Boost__random_state,Boost__reg_alpha,Boost__reg_lambda,Boost__scale_pos_weight,Boost__subsample,Boost__tree_method,Boost__validate_parameters,Boost__verbosity,Boost__boosting_type,Boost__class_weight,Boost__metric,Boost__min_child_samples,Boost__min_split_gain,Boost__silent,Boost__subsample_for_bin,Boost__subsample_freq
-,"[('Boost', XGBClassifier(base_score=0.5, booster='gbtree', boosting_type='gbdt',
-              class_weight=None, colsample_bylevel=1, colsample_bynode=1,
-              colsample_bytree=0.9234, gamma=0, gpu_id=-1,
-              importance_type='gain', interaction_constraints='',
-              learning_rate=0.02, max_delta_step=0, max_depth=20, metric='None',
-              min_child_samples=399, min_child_weight=0.1, min_split_gain=0.0,
-              missing=nan, monotone_constraints='()', n_estimators=150,
-              n_jobs=4, num_parallel_tree=1, objective='reg:squarederror',
-              random_state=314, reg_alpha=2, reg_lambda=5, scale_pos_weight=1,
-              silent=True, subsample=0.855, ...))]",False,"XGBClassifier(base_score=0.5, booster='gbtree', boosting_type='gbdt',
-              class_weight=None, colsample_bylevel=1, colsample_bynode=1,
-              colsample_bytree=0.9234, gamma=0, gpu_id=-1,
-              importance_type='gain', interaction_constraints='',
-              learning_rate=0.02, max_delta_step=0, max_depth=20, metric='None',
-              min_child_samples=399, min_child_weight=0.1, min_split_gain=0.0,
-              missing=nan, monotone_constraints='()', n_estimators=150,
-              n_jobs=4, num_parallel_tree=1, objective='reg:squarederror',
-              random_state=314, reg_alpha=2, reg_lambda=5, scale_pos_weight=1,
-              silent=True, subsample=0.855, ...)",reg:squarederror,0.5,gbtree,1,1,0.9234,0,-1,gain,,0.02,0,20,0.1,,(),150,4,1,314,2,5,1,0.855,exact,1,,gbdt,,None,399,0.0,True,200000,1
+memory,steps,verbose,Boost,Boost__boosting_type,Boost__class_weight,Boost__colsample_bytree,Boost__importance_type,Boost__learning_rate,Boost__max_depth,Boost__min_child_samples,Boost__min_child_weight,Boost__min_split_gain,Boost__n_estimators,Boost__n_jobs,Boost__num_leaves,Boost__objective,Boost__random_state,Boost__reg_alpha,Boost__reg_lambda,Boost__silent,Boost__subsample,Boost__subsample_for_bin,Boost__subsample_freq,Boost__metric
+,"[('Boost', LGBMClassifier(colsample_bytree=0.9234, learning_rate=0.02, max_depth=20,
+               metric='None', min_child_samples=399, min_child_weight=0.1,
+               n_estimators=10, n_jobs=4, num_leaves=30, random_state=314,
+               reg_alpha=2, reg_lambda=5, subsample=0.855, subsample_freq=1))]",False,"LGBMClassifier(colsample_bytree=0.9234, learning_rate=0.02, max_depth=20,
+               metric='None', min_child_samples=399, min_child_weight=0.1,
+               n_estimators=10, n_jobs=4, num_leaves=30, random_state=314,
+               reg_alpha=2, reg_lambda=5, subsample=0.855, subsample_freq=1)",gbdt,,0.9234,split,0.02,20,399,0.1,0.0,10,4,30,,314,2,5,True,0.855,200000,1,None
