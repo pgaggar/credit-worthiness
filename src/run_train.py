@@ -9,6 +9,7 @@ from sklearn.metrics import mean_squared_error
 from logger.logger import get_logger
 from trainer import custom_accuracy
 from trainer.decision_tree_classifier import DTClassifier
+from trainer.random_forest_classifier import RFClassifier
 from utils.load_and_process import DataLoader
 
 logger = get_logger()
@@ -78,7 +79,6 @@ def run_test_experiment(ds):
         with open('output/model_output.txt', 'wb+') as fout:
             fout.write(output_str.encode('utf8'))
 
-
     except IOError:
         logger.info("Can't find file")
     end_time = clock()
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     parser.add_argument('--threads', type=int, default=1, help='Number of threads (defaults to 1, -1 for auto)')
     parser.add_argument('--seed', type=int, help='A random seed to set, if desired')
     parser.add_argument('--boosting', action='store_true', help='Run the Boosting experiment')
-    parser.add_argument('--bagging', action='store_true', help='Run the Bagging experiment')
+    parser.add_argument('--rf', action='store_true', help='Run the Bagging experiment')
     parser.add_argument('--gdboosting', action='store_true', help='Run the Gradient Boosting experiment')
     parser.add_argument('--knn', action='store_true', help='Run the KNN experiment')
     parser.add_argument('--dtclf', action='store_true', help='Run the Decision Tree experiment')
@@ -125,8 +125,8 @@ if __name__ == '__main__':
     # if args.gdboosting:
     #     run_experiment(ds, experiments.GradientBoostingExperiment, 'GradientBoosting', verbose, timings)
     #
-    # if args.bagging:
-    #     run_experiment(ds, experiments.BaggingExperiment, 'Bagging', verbose, timings)
+    if args.rf:
+        run_experiment(ds, RFClassifier, 'RFClassifier', verbose, timings)
     #
     # if args.ann:
     #     run_experiment(ds, experiments.ANNExperiment, 'ANN', verbose, timings)

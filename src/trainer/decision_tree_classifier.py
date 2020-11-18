@@ -13,7 +13,7 @@ class DTClassifier:
 
     def perform(self):
         params = {'DTClassifier__criterion': ['gini'],
-                  'DTClassifier__max_depth': [40, 60]}  # , 'DT__max_leaf_nodes': max_leaf_nodes}
+                  'DTClassifier__max_depth': [20, 40, 60]}  # , 'DT__max_leaf_nodes': max_leaf_nodes}
 
         learner = DecisionTreeClassifier(random_state=self._details.seed)
 

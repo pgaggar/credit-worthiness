@@ -1,19 +1,17 @@
 import os
 import pickle
-import warnings
 from time import clock
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn
-import sklearn.model_selection as ms
 from sklearn.metrics import make_scorer
-from sklearn.metrics import mean_squared_error
 from logger.logger import get_logger
 from utils.path_utils import get_app_data_path
 
+from sklearn.model_selection import train_test_split, KFold, GridSearchCV  # to split the data
 
 import matplotlib
+
 matplotlib.use('Agg')
 
 logger = get_logger()
@@ -26,17 +24,15 @@ if not os.path.exists(OUTPUT_DIRECTORY):
 if not os.path.exists('{}/images'.format(OUTPUT_DIRECTORY)):
     os.makedirs('{}/images'.format(OUTPUT_DIRECTORY))
 
-def custom_accuracy(truth, pred):
-    diff = np.abs(truth - pred)
-    diff = np.where(diff <= 3, 1, 0)
-    sum = np.sum(diff)
 
-    return sum / len(truth)
+def custom_accuracy(truth, pred):
+    diff = np.where(truth == pred, 1, 0)
+    sm = np.sum(diff)
+
+    return sm / len(truth)
 
 
 scorer_accuracy = make_scorer(custom_accuracy)
-
-scorer_mse = make_scorer(mean_squared_error)
 
 
 def basic_results(learner, training_x, training_y, test_x, test_y, params, clf_name=None, dataset=None,
@@ -61,13 +57,16 @@ def basic_results(learner, training_x, training_y, test_x, test_y, params, clf_n
         raise Exception('clf_type and dataset are required')
     if seed is not None:
         np.random.seed(seed)
-    curr_scorer = scorer_mse
-    cv = ms.GridSearchCV(learner, n_jobs=threads, param_grid=params, verbose=10, refit=True, cv=5, scoring=curr_scorer)
+    kfold = KFold(n_splits=10, random_state=seed)
+    cv = GridSearchCV(learner, n_jobs=threads, param_grid=params, verbose=10, refit=True, cv=kfold,
+                      scoring=scorer_accuracy)
+    training_y = training_y.ravel()
+    test_y = test_y.ravel()
     cv.fit(training_x, training_y)
     reg_table = pd.DataFrame(cv.cv_results_)
     reg_table.to_csv('{}/{}_{}_reg.csv'.format(OUTPUT_DIRECTORY, clf_name, dataset), index=False)
     test_score = cv.score(test_x, test_y)
-
+    logger.info("Test Score: {}".format(test_score))
     best_estimator = cv.best_estimator_.fit(training_x, training_y)
     with open(os.path.join(OUTPUT_DIRECTORY, 'model.pkl'), 'wb') as fout:
         pickle.dump(best_estimator, fout)
@@ -102,7 +101,7 @@ def make_timing_curve(x, y, clf, clf_name, dataset, dataset_readable_name, verbo
     for i, frac in enumerate(sizes):
         for j in range(tests):
             np.random.seed(seed)
-            x_train, x_test, y_train, y_test = ms.train_test_split(x, y, test_size=1 - frac, random_state=seed)
+            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=1 - frac, random_state=seed)
             st = clock()
             clf.fit(x_train, y_train)
             out['train'][i, j] = (clock() - st)
@@ -137,10 +136,10 @@ def perform_experiment(ds, ds_name, ds_readable_name, clf_name, params, pipe, se
     :param threads:
     :return: final_params
     """
-    warnings.simplefilter("ignore", sklearn.exceptions.DataConversionWarning)
-    warnings.simplefilter("ignore", DeprecationWarning)
+    # warnings.simplefilter("ignore", sklearn.exceptions.DataConversionWarning)
+    # warnings.simplefilter("ignore", DeprecationWarning)
 
-    ds_training_x, ds_testing_x, ds_training_y, ds_testing_y = ms.train_test_split(
+    ds_training_x, ds_testing_x, ds_training_y, ds_testing_y = train_test_split(
         ds.get_features(),
         ds.get_output(),
         test_size=0.2,
@@ -157,8 +156,8 @@ def perform_experiment(ds, ds_name, ds_readable_name, clf_name, params, pipe, se
     ds_final_params = ds_clf.best_params_
     pipe.set_params(**ds_final_params)
 
-    make_timing_curve(ds.features, ds.output, pipe, clf_name, ds_name, ds_readable_name,
-                      seed=seed)
+    # make_timing_curve(ds.features, ds.output, pipe, clf_name, ds_name, ds_readable_name,
+    #                   seed=seed)
 
     return ds_final_params
 
