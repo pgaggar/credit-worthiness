@@ -21,7 +21,6 @@ class DTClassifier:
             ('DTClassifier', learner)])
 
         trainer.perform_experiment(ds=self._details.ds, ds_name=self._details.ds_name,
-                                   ds_readable_name=self._details.ds_readable_name,
                                    clf_name='DTClassifier', params=params,
                                    pipe=pipe,
                                    seed=self._details.seed)

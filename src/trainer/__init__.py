@@ -8,7 +8,7 @@ from sklearn.metrics import make_scorer
 from logger.logger import get_logger
 from utils.path_utils import get_app_data_path
 
-from sklearn.model_selection import train_test_split, KFold, GridSearchCV  # to split the data
+from sklearn.model_selection import train_test_split, KFold, GridSearchCV
 
 import matplotlib
 
@@ -35,22 +35,20 @@ def custom_accuracy(truth, pred):
 scorer_accuracy = make_scorer(custom_accuracy)
 
 
-def basic_results(learner, training_x, training_y, test_x, test_y, params, clf_name=None, dataset=None,
-                  dataset_readable_name=None, seed=55, threads=1):
+def basic_results(learner, training_x, training_y, params, clf_name=None, dataset=None, seed=55, threads=1):
     """
     :param learner:
     :param training_x:
     :param training_y:
-    :param test_x:
-    :param test_y:
     :param params:
     :param clf_name:
     :param dataset:
     :param dataset_readable_name:
     :param seed:
     :param threads:
-    :return: GridsearchCV
+    :return:
     """
+
     logger.info("Computing basic results for {} ({} thread(s))".format(clf_name, threads))
 
     if clf_name is None or dataset is None:
@@ -61,12 +59,11 @@ def basic_results(learner, training_x, training_y, test_x, test_y, params, clf_n
     cv = GridSearchCV(learner, n_jobs=threads, param_grid=params, verbose=10, refit=True, cv=kfold,
                       scoring=scorer_accuracy)
     training_y = training_y.ravel()
-    test_y = test_y.ravel()
+
     cv.fit(training_x, training_y)
     reg_table = pd.DataFrame(cv.cv_results_)
     reg_table.to_csv('{}/{}_{}_reg.csv'.format(OUTPUT_DIRECTORY, clf_name, dataset), index=False)
-    test_score = cv.score(test_x, test_y)
-    logger.info("Test Score: {}".format(test_score))
+
     best_estimator = cv.best_estimator_.fit(training_x, training_y)
     with open(os.path.join(OUTPUT_DIRECTORY, 'model.pkl'), 'wb') as fout:
         pickle.dump(best_estimator, fout)
@@ -124,7 +121,7 @@ def make_timing_curve(x, y, clf, clf_name, dataset, dataset_readable_name, verbo
     logger.info(" - Timing curve complete")
 
 
-def perform_experiment(ds, ds_name, ds_readable_name, clf_name, params, pipe, seed=0, threads=1):
+def perform_experiment(ds, ds_name, clf_name, params, pipe, seed=0, threads=1):
     """
     :param ds:
     :param ds_name:
@@ -136,22 +133,12 @@ def perform_experiment(ds, ds_name, ds_readable_name, clf_name, params, pipe, se
     :param threads:
     :return: final_params
     """
-    # warnings.simplefilter("ignore", sklearn.exceptions.DataConversionWarning)
-    # warnings.simplefilter("ignore", DeprecationWarning)
 
-    ds_training_x, ds_testing_x, ds_training_y, ds_testing_y = train_test_split(
-        ds.get_features(),
-        ds.get_output(),
-        test_size=0.2,
-        random_state=seed,
-        shuffle=True)
-
-    # # Adjust training data if need be
-    # ds_training_x, ds_training_y = ds.pre_training_adjustment(ds_training_x, ds_training_y)
-
-    pipe = pipe
-    ds_clf = basic_results(pipe, ds_training_x, ds_training_y, ds_testing_x, ds_testing_y,
-                           params, clf_name, ds_name, ds_readable_name, threads=threads, seed=seed)
+    train_df, _ = ds.load_train_test()
+    ds_training_x = train_df.loc[:, train_df.columns != ds.output_column_name()].values
+    ds_training_y = train_df.loc[:, train_df.columns == ds.output_column_name()].values
+    ds_clf = basic_results(pipe, ds_training_x, ds_training_y, params, clf_name, ds_name,
+                           threads=threads, seed=seed)
 
     ds_final_params = ds_clf.best_params_
     pipe.set_params(**ds_final_params)

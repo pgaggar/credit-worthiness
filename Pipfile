@@ -13,6 +13,9 @@ pandas = "*"
 seaborn = "*"
 matplotlib = "*"
 numpy = "*"
+lightgbm = "*"
+psutil = "*"
+xgboost = "*"
 
 [requires]
 python_version = "3.7"

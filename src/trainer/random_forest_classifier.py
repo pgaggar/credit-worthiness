@@ -20,6 +20,5 @@ class RFClassifier:
             ('RF', random_forest)])
 
         trainer.perform_experiment(ds=self._details.ds, ds_name=self._details.ds_name,
-                                   ds_readable_name=self._details.ds_readable_name,
-                                   clf_name='RandomForest', params=params, pipe=pipe,
+                                   clf_name='RF', params=params, pipe=pipe,
                                    seed=self._details.seed)

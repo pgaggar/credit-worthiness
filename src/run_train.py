@@ -2,49 +2,47 @@ import argparse
 import pickle
 from datetime import datetime
 from time import clock
-
+import psutil
 import numpy as np
-from sklearn.metrics import mean_squared_error
-
+import os
+from utils.path_utils import get_app_data_path
 from logger.logger import get_logger
 from trainer import custom_accuracy
 from trainer.decision_tree_classifier import DTClassifier
 from trainer.random_forest_classifier import RFClassifier
+from trainer.gradient_boosted_classifier import GBClassifier
 from utils.load_and_process import DataLoader
 
 logger = get_logger()
 
 
 class TrainingDetails(object):
-    def __init__(self, ds, ds_name, ds_readable_name, seed):
+    def __init__(self, ds, ds_name, seed):
         self.ds = ds
         self.ds_name = ds_name
-        self.ds_readable_name = ds_readable_name
         self.seed = seed
 
 
 def run_experiment(ds, experiment, timing_key, verbose, timings):
     """
-    Run the training experiment chosen by the user
-    :param details:
+
+    :param ds:
     :param experiment:
     :param timing_key:
     :param verbose:
     :param timings:
-    :return: None
+    :return:
     """
     data = ds['data']
     data.load_and_process()
-    data.build_train_test_split()
+    data.dump_test_train()
     experiment_details = TrainingDetails(
-        data, ds['name'], ds['readable_name'],
-        seed=seed
+        data, ds['name'], seed=seed
     )
 
     t = datetime.now()
     exp = experiment(experiment_details, verbose=verbose)
 
-    logger.info("Running {} experiment: {}".format(timing_key, experiment_details.ds_readable_name))
     exp.perform()
     t_d = datetime.now() - t
     timings[timing_key] = t_d.seconds
@@ -52,39 +50,36 @@ def run_experiment(ds, experiment, timing_key, verbose, timings):
 
 def run_test_experiment(ds):
     """
-    Run the testing experiment on the hold-out dataset
-    :param details:
+
+    :param ds:
     :return:
     """
     start_time = clock()
     data = ds['data']
-    data.load_and_impute()
-    data.build_train_test_split()
-    experiment_details = TrainingDetails(
-        data, ds['name'], ds['readable_name'],
-        seed=seed
-    )
+
     try:
-        with open('./output/model.pkl', 'rb') as fin:
+        model_path = os.path.join(get_app_data_path(), 'output/model.pkl')
+        with open(model_path, 'rb') as fin:
             model = pickle.load(fin)
-        data = experiment_details.ds.get_features()
-        output = model.predict(data)
-        y = experiment_details.ds.get_output()
-        mse = np.sqrt(mean_squared_error(output, y))
+        _, test_df = data.load_train_test()
+        test_x = test_df.loc[:, test_df.columns != data.output_column_name()].values
+        test_y = test_df.loc[:, test_df.columns == data.output_column_name()].values
+        output = model.predict(test_x)
+        y = test_y.ravel()
         acc = np.sqrt(custom_accuracy(output, y))
-        logger.info("RMSE: %s", mse)
-        logger.info("Accuracy: %s", acc)
+        logger.info("Accuracy on test: %s", acc)
         output = output.astype(str)
         output_str = "\n".join(output)
-        with open('output/model_output.txt', 'wb+') as fout:
+        result_path = os.path.join(get_app_data_path(), 'output/model_output.txt')
+        with open(result_path, 'wb+') as fout:
             fout.write(output_str.encode('utf8'))
 
     except IOError:
         logger.info("Can't find file")
     end_time = clock()
-    # logger.info("Total time for 100000 samples: %s seconds", end_time - start_time)
-    # process = psutil.Process(os.getpid())
-    # logger.info("Memory usage: %s MB", process.memory_info()[0] / (1024 * 1024))
+    logger.info("Total time for 100000 samples: %s seconds", end_time - start_time)
+    process = psutil.Process(os.getpid())
+    logger.info("Memory usage: %s MB", process.memory_info()[0] / (1024 * 1024))
 
 
 if __name__ == '__main__':
@@ -93,7 +88,7 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, help='A random seed to set, if desired')
     parser.add_argument('--boosting', action='store_true', help='Run the Boosting experiment')
     parser.add_argument('--rf', action='store_true', help='Run the Bagging experiment')
-    parser.add_argument('--gdboosting', action='store_true', help='Run the Gradient Boosting experiment')
+    parser.add_argument('--lgbm', action='store_true', help='Run the Gradient Boosting experiment')
     parser.add_argument('--knn', action='store_true', help='Run the KNN experiment')
     parser.add_argument('--dtclf', action='store_true', help='Run the Decision Tree experiment')
     parser.add_argument('--ann', action='store_true', help='Run the ANN experiment')
@@ -122,9 +117,9 @@ if __name__ == '__main__':
     # if args.boosting:
     #     run_experiment(ds, experiments.BoostingExperiment, 'Boosting', verbose, timings)
     #
-    # if args.gdboosting:
-    #     run_experiment(ds, experiments.GradientBoostingExperiment, 'GradientBoosting', verbose, timings)
-    #
+    if args.lgbm:
+        run_experiment(ds, GBClassifier, 'GBClassifier', verbose, timings)
+
     if args.rf:
         run_experiment(ds, RFClassifier, 'RFClassifier', verbose, timings)
     #

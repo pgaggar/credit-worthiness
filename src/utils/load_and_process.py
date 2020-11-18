@@ -3,9 +3,7 @@ from logger.logger import get_logger
 import numpy as np
 from src.utils.path_utils import get_app_data_path
 import os
-from sklearn.pipeline import Pipeline
 import sklearn.model_selection as ms
-from sklearn.preprocessing import StandardScaler
 
 logger = get_logger()
 
@@ -17,18 +15,8 @@ class DataLoader:
         self._verbose = verbose
         self.features = None
         self.output = None
-        self.testing_x = None
-        self.testing_y = None
-        self.training_x = None
-        self.training_y = None
         self._seed = seed
         self._data = pd.DataFrame()
-
-    def build_train_test_split(self, test_size=0.3):
-        if not self.training_x and not self.training_y and not self.testing_x and not self.testing_y:
-            self.training_x, self.testing_x, self.training_y, self.testing_y = ms.train_test_split(
-                self.features, self.output, test_size=test_size, random_state=self._seed
-            )
 
     def load_and_process(self):
         """
@@ -145,7 +133,7 @@ class DataLoader:
         self._data = full_df
         print(self._data.columns)
 
-    def dump_test_train_val(self, test_size=0.2, random_state=123):
+    def dump_test_train(self, test_size=0.2, random_state=123):
         """
         :param test_size:
         :param random_state:
@@ -156,14 +144,18 @@ class DataLoader:
                                                 random_state=random_state,
                                                 stratify=self._data[self.output_column_name()])
 
-        train_df, val_df = ms.train_test_split(train_df,
-                                               test_size=test_size,
-                                               random_state=random_state,
-                                               stratify=train_df[self.output_column_name()])
+        test_df.to_csv('{}/{}_test.csv'.format(get_app_data_path(), self.data_name()))
+        train_df.to_csv('{}/{}_train.csv'.format(get_app_data_path(), self.data_name()))
 
-        test_df.to_csv('{}/{}_test.csv'.format(get_app_data_path(), self.data_name()), index=False, header=False)
-        train_df.to_csv('{}/{}_train.csv'.format(get_app_data_path(), self.data_name()), index=False, header=False)
-        val_df.to_csv('{}/{}_validate.csv'.format(get_app_data_path(), self.data_name()), index=False, header=False)
+    def load_train_test(self):
+        """
+        :return:
+        """
+        train_df = pd.read_csv('{}/{}_train.csv'.format(get_app_data_path(), self.data_name()),
+                               index_col='applicant_id')
+        test_df = pd.read_csv('{}/{}_test.csv'.format(get_app_data_path(), self.data_name()), index_col='applicant_id')
+
+        return train_df, test_df
 
 
 if __name__ == '__main__':
@@ -172,5 +164,5 @@ if __name__ == '__main__':
     feature_list = []
     for feature in cd_data.features:
         feature_list.append(feature)
-    cd_data.dump_test_train_val()
+    cd_data.dump_test_train()
     # logger.info(feature_list)
