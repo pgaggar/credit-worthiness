@@ -1,0 +1,6 @@
+memory,steps,verbose,MLP,MLP__activation,MLP__alpha,MLP__batch_size,MLP__beta_1,MLP__beta_2,MLP__early_stopping,MLP__epsilon,MLP__hidden_layer_sizes,MLP__learning_rate,MLP__learning_rate_init,MLP__max_fun,MLP__max_iter,MLP__momentum,MLP__n_iter_no_change,MLP__nesterovs_momentum,MLP__power_t,MLP__random_state,MLP__shuffle,MLP__solver,MLP__tol,MLP__validation_fraction,MLP__verbose,MLP__warm_start
+,"[('MLP', MLPClassifier(alpha=0.001, early_stopping=True,
+              hidden_layer_sizes=(50, 100, 50), learning_rate_init=0.005,
+              max_iter=1000, random_state=3783231308))]",False,"MLPClassifier(alpha=0.001, early_stopping=True,
+              hidden_layer_sizes=(50, 100, 50), learning_rate_init=0.005,
+              max_iter=1000, random_state=3783231308)",relu,0.001,auto,0.9,0.999,True,1e-08,"(50, 100, 50)",constant,0.005,15000,1000,0.9,10,True,0.5,3783231308,True,adam,0.0001,0.1,False,False

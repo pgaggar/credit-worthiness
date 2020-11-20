@@ -1,0 +1,2 @@
+memory,steps,verbose,pca,KNN,pca__copy,pca__iterated_power,pca__n_components,pca__random_state,pca__svd_solver,pca__tol,pca__whiten,KNN__algorithm,KNN__leaf_size,KNN__metric,KNN__metric_params,KNN__n_jobs,KNN__n_neighbors,KNN__p,KNN__weights
+,"[('pca', PCA(n_components=15, random_state=3093138372)), ('KNN', KNeighborsClassifier(metric='manhattan', n_neighbors=10))]",False,"PCA(n_components=15, random_state=3093138372)","KNeighborsClassifier(metric='manhattan', n_neighbors=10)",True,auto,15,3093138372,auto,0.0,False,auto,30,manhattan,,,10,2,uniform

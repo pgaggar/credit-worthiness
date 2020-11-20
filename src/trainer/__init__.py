@@ -4,7 +4,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.metrics import make_scorer
+from sklearn.metrics import make_scorer, precision_score, recall_score
 from logger.logger import get_logger
 from utils.path_utils import get_app_data_path
 
@@ -25,10 +25,12 @@ if not os.path.exists('{}/images'.format(OUTPUT_DIRECTORY)):
 
 
 def custom_accuracy(truth, pred):
-    diff = np.where(truth == pred, 1, 0)
-    sm = np.sum(diff)
 
-    return sm / len(truth)
+    pr = precision_score(truth, pred)
+    re = recall_score(truth, pred)
+    custom_f1 = 8*re*pr / (4*re + pr + 1.0E-9)
+
+    return custom_f1
 
 
 scorer_accuracy = make_scorer(custom_accuracy)
@@ -55,7 +57,7 @@ def basic_results(learner, training_x, training_y, params, clf_name=None, datase
         np.random.seed(seed)
     kfold = KFold(n_splits=5, random_state=seed, shuffle=True)
     cv = GridSearchCV(learner, n_jobs=threads, param_grid=params, verbose=10, refit=True, cv=kfold,
-                      scoring='recall')
+                      scoring=scorer_accuracy)
     training_y = training_y.ravel()
 
     cv.fit(training_x, training_y)

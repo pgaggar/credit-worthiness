@@ -4,6 +4,7 @@ import numpy as np
 from src.utils.path_utils import get_app_data_path
 import os
 import sklearn.model_selection as ms
+from sklearn.preprocessing import StandardScaler
 
 logger = get_logger()
 
@@ -68,11 +69,8 @@ class DataLoader:
     def _preprocess_data(self):
         full_df = self._data
 
-        interval = (18, 25, 35, 60, 120)
-
-        cats = ['Student', 'Young', 'Adult', 'Senior']
-        full_df["Age_cat"] = pd.cut(full_df['Primary_applicant_age_in_years'], interval, labels=cats)
-
+        full_df['Principal_loan_amount'] = StandardScaler().fit_transform(
+            full_df['Principal_loan_amount'].values.reshape(-1, 1))
         full_df['Savings_account_balance'] = full_df['Savings_account_balance'].fillna('no_inf')
         full_df['Other_EMI_plans'] = full_df['Other_EMI_plans'].fillna('NA')
 
@@ -95,9 +93,6 @@ class DataLoader:
             pd.get_dummies(full_df.Savings_account_balance, drop_first=True, prefix='Savings'), left_index=True,
             right_index=True)
 
-        full_df = full_df.merge(pd.get_dummies(full_df.Age_cat, drop_first=True, prefix='Age_cat'),
-                                left_index=True, right_index=True)
-
         full_df = full_df.merge(pd.get_dummies(full_df.Marital_status, drop_first=True, prefix='Marital_status'),
                                 left_index=True, right_index=True)
 
@@ -117,9 +112,7 @@ class DataLoader:
         del full_df["Purpose"]
         del full_df["Gender"]
         del full_df["Housing"]
-        del full_df["Primary_applicant_age_in_years"]
         del full_df["Savings_account_balance"]
-        del full_df["Age_cat"]
         del full_df["Marital_status"]
         del full_df["Employment_status"]
         del full_df["Telephone"]

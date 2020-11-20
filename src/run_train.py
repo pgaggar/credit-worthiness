@@ -14,6 +14,8 @@ from trainer.adaboost_classifier import AdaboostClassifier
 from trainer.lightgbm_classifier import LightGBMClassifier
 from trainer.xgboost_classifier import XGBClassifier
 from trainer.logistic_regression_classifier import LRClassifier
+from trainer.knn_classifier import KNNClassifier
+from trainer.ann_classifier import ANNClassifier
 from utils.load_and_process import DataLoader
 
 logger = get_logger()
@@ -69,7 +71,7 @@ def run_test_experiment(ds):
         test_y = test_df.loc[:, test_df.columns == data.output_column_name()].values
         output = model.predict(test_x)
         y = test_y.ravel()
-        acc = np.sqrt(custom_accuracy(output, y))
+        acc = custom_accuracy(output, y)
         logger.info("Accuracy on test: %s", acc)
 
     except IOError:
@@ -89,7 +91,9 @@ if __name__ == '__main__':
     parser.add_argument('--lgbm', action='store_true', help='Run the LightGBM experiment')
     parser.add_argument('--xgb', action='store_true', help='Run the XGBoost experiment')
     parser.add_argument('--boost', action='store_true', help='Run the Adaboost experiment')
-    parser.add_argument('--dtclf', action='store_true', help='Run the Decision Tree experiment')
+    parser.add_argument('--dt', action='store_true', help='Run the Decision Tree experiment')
+    parser.add_argument('--knn', action='store_true', help='Run the K Nearest Neighbors experiment')
+    parser.add_argument('--ann', action='store_true', help='Run the ANN experiment')
     parser.add_argument('--lr', action='store_true', help='Run the Logistic Regression experiment')
     parser.add_argument('--test', action='store_true', help='Test the trained model')
     parser.add_argument('--verbose', action='store_true', help='If true, provide verbose output')
@@ -127,8 +131,14 @@ if __name__ == '__main__':
     if args.lr:
         run_experiment(ds, LRClassifier, 'LRClassifier', verbose, timings)
 
-    if args.dtclf:
+    if args.dt:
         run_experiment(ds, DTClassifier, 'DTClassifier', verbose, timings)
+
+    if args.knn:
+        run_experiment(ds, KNNClassifier, 'KNNClassifier', verbose, timings)
+
+    if args.ann:
+        run_experiment(ds, ANNClassifier, 'ANNClassifier', verbose, timings)
 
     if args.test:
         run_test_experiment(ds)
