@@ -1,4 +1,4 @@
 memory,steps,verbose,Boost,Boost__ccp_alpha,Boost__criterion,Boost__init,Boost__learning_rate,Boost__loss,Boost__max_depth,Boost__max_features,Boost__max_leaf_nodes,Boost__min_impurity_decrease,Boost__min_impurity_split,Boost__min_samples_leaf,Boost__min_samples_split,Boost__min_weight_fraction_leaf,Boost__n_estimators,Boost__n_iter_no_change,Boost__presort,Boost__random_state,Boost__subsample,Boost__tol,Boost__validation_fraction,Boost__verbose,Boost__warm_start
-,"[('Boost', GradientBoostingClassifier(learning_rate=0.02, max_depth=20, n_estimators=50,
-                           random_state=2414056898))]",False,"GradientBoostingClassifier(learning_rate=0.02, max_depth=20, n_estimators=50,
-                           random_state=2414056898)",0.0,friedman_mse,,0.02,deviance,20,,,0.0,,1,2,0.0,50,,deprecated,2414056898,1.0,0.0001,0.1,0,False
+,"[('Boost', GradientBoostingClassifier(learning_rate=0.04, max_depth=20, n_estimators=150,
+                           random_state=3668402510))]",False,"GradientBoostingClassifier(learning_rate=0.04, max_depth=20, n_estimators=150,
+                           random_state=3668402510)",0.0,friedman_mse,,0.04,deviance,20,,,0.0,,1,2,0.0,150,,deprecated,3668402510,1.0,0.0001,0.1,0,False

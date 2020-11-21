@@ -28,7 +28,7 @@ def custom_accuracy(truth, pred):
 
     pr = precision_score(truth, pred)
     re = recall_score(truth, pred)
-    custom_f1 = 8*re*pr / (4*re + pr + 1.0E-9)
+    custom_f1 = 4*re*pr / (re + 4*pr + 1.0E-9)
 
     return custom_f1
 

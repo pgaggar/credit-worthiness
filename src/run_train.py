@@ -11,12 +11,13 @@ from trainer import custom_accuracy
 from trainer.decision_tree_classifier import DTClassifier
 from trainer.random_forest_classifier import RFClassifier
 from trainer.adaboost_classifier import AdaboostClassifier
-from trainer.lightgbm_classifier import LightGBMClassifier
 from trainer.xgboost_classifier import XGBClassifier
 from trainer.logistic_regression_classifier import LRClassifier
 from trainer.knn_classifier import KNNClassifier
 from trainer.ann_classifier import ANNClassifier
+from non_ml.non_ml_classifier import NonMLClassifier
 from utils.load_and_process import DataLoader
+from sklearn.metrics import precision_score, recall_score, f1_score, balanced_accuracy_score, accuracy_score
 
 logger = get_logger()
 
@@ -71,8 +72,19 @@ def run_test_experiment(ds):
         test_y = test_df.loc[:, test_df.columns == data.output_column_name()].values
         output = model.predict(test_x)
         y = test_y.ravel()
-        acc = custom_accuracy(output, y)
-        logger.info("Accuracy on test: %s", acc)
+        mf1 = custom_accuracy(output, y)
+        f1 = f1_score(output, y)
+        pr = precision_score(output, y)
+        re = recall_score(output, y)
+        acc = balanced_accuracy_score(output, y)
+        nacc = accuracy_score(output, y)
+
+        logger.info("Custom F1 on test: {}".format(mf1))
+        logger.info("Standard F1 on test: {}".format(f1))
+        logger.info("Precision on test: {}".format(pr))
+        logger.info("Recall on test: {}".format(re))
+        logger.info("Balanced Accuracy on test: {}".format(acc))
+        logger.info("Accuracy on test: {}".format(nacc))
 
     except IOError:
         logger.info("Can't find file")
@@ -81,6 +93,42 @@ def run_test_experiment(ds):
     process = psutil.Process(os.getpid())
     logger.info("Memory usage: %s MB", process.memory_info()[0] / (1024 * 1024))
 
+def run_test_non_ml_experiment(ds):
+    """
+
+    :param ds:
+    :return:
+    """
+    start_time = time.process_time()
+    data = ds['data']
+
+    try:
+        model = NonMLClassifier()
+        _, test_df = data.load_train_test()
+        test_x = test_df.loc[:, test_df.columns != data.output_column_name()]
+        test_y = test_df.loc[:, test_df.columns == data.output_column_name()]
+        output = model.predict(test_x)
+        y = test_y.values.ravel()
+        mf1 = custom_accuracy(output, y)
+        f1 = f1_score(output, y)
+        pr = precision_score(output, y)
+        re = recall_score(output, y)
+        acc = balanced_accuracy_score(output, y)
+        nacc = accuracy_score(output, y)
+        logger.info("======Non ML Results")
+        logger.info("Custom F1 on test: {}".format(mf1))
+        logger.info("Standard F1 on test: {}".format(f1))
+        logger.info("Precision on test: {}".format(pr))
+        logger.info("Recall on test: {}".format(re))
+        logger.info("Balanced Accuracy on test: {}".format(acc))
+        logger.info("Accuracy on test: {}".format(nacc))
+
+    except IOError:
+        logger.info("Can't find file")
+    end_time = time.process_time()
+    logger.info("Total time for 100000 samples: %s seconds", end_time - start_time)
+    process = psutil.Process(os.getpid())
+    logger.info("Memory usage: %s MB", process.memory_info()[0] / (1024 * 1024))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Perform experiments')
@@ -88,7 +136,6 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, help='A random seed to set, if desired')
     parser.add_argument('--boosting', action='store_true', help='Run the Boosting experiment')
     parser.add_argument('--rf', action='store_true', help='Run the Bagging experiment')
-    parser.add_argument('--lgbm', action='store_true', help='Run the LightGBM experiment')
     parser.add_argument('--xgb', action='store_true', help='Run the XGBoost experiment')
     parser.add_argument('--boost', action='store_true', help='Run the Adaboost experiment')
     parser.add_argument('--dt', action='store_true', help='Run the Decision Tree experiment')
@@ -116,9 +163,6 @@ if __name__ == '__main__':
 
     timings = {}
 
-    if args.lgbm:
-        run_experiment(ds, LightGBMClassifier, 'LGBClassifier', verbose, timings)
-
     if args.xgb:
         run_experiment(ds, XGBClassifier, 'XGBClassifier', verbose, timings)
 
@@ -142,3 +186,4 @@ if __name__ == '__main__':
 
     if args.test:
         run_test_experiment(ds)
+        run_test_non_ml_experiment(ds)
